@@ -54,8 +54,8 @@ function App() {
       <header className="hero-section">
         <div className="hero-content">
           <div className="profile-badge">⚡ Portofolio</div>
-          <h1>Halo, Saya Naufal</h1>
-          <p className="subtitle">Mahasiswa Pemrograman Web Lanjut — Web Developer & PWA Enthusiast</p>
+          <h1>Saya Naufal 2403040066</h1>
+          <p className="subtitle">Mata Kuliah Pemrograman Web Lanjut </p>
           
           {/* Tombol Install PWA tetap dipertahankan */}
           {deferredPrompt && (
@@ -71,12 +71,12 @@ function App() {
         {/* Tentang Saya */}
         <section className="section">
           <h2>About Me</h2>
-          <p>Saya adalah seorang mahasiswa semester 4 yang sedang mendalami pengembangan web, khususnya arsitektur modern seperti *Progressive Web Apps* (PWA). Berfokus pada pembuatan aplikasi yang cepat, responsif, dan dapat diakses kapan saja.</p>
+          <p>halo.</p>
         </section>
 
         {/* Daftar Proyek */}
         <section className="section">
-          <h2>My Projects</h2>
+          <h2>latihan</h2>
           <div className="project-grid">
             {projects.map((project) => (
               <div key={project.id} className="project-card">
