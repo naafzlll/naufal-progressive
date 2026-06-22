@@ -53,7 +53,7 @@ function App() {
       {/* Hero Section */}
       <header className="hero-section">
         <div className="hero-content">
-          <div className="profile-badge">⚡ Portofolio</div>
+          <div className="profile-badge">Praktikum</div>
           <h1>Saya Naufal 2403040066</h1>
           <p className="subtitle">Mata Kuliah Pemrograman Web Lanjut </p>
           
