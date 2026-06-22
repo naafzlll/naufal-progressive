@@ -3,16 +3,21 @@ import './App.css';
 
 function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [installPrompt, setInstallPrompt] = useState(null);
-  const [isInstalled, setIsInstalled] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
 
-  // Deteksi status koneksi internet
   useEffect(() => {
+    // Menangani status online/offline
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
+
+    // Menangani instalasi PWA
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    });
 
     return () => {
       window.removeEventListener('online', handleOnline);
@@ -20,106 +25,73 @@ function App() {
     };
   }, []);
 
-  // Tangkap event install PWA
-  useEffect(() => {
-    const handler = (e) => {
-      e.preventDefault();
-      setInstallPrompt(e);
-    };
-
-    window.addEventListener('beforeinstallprompt', handler);
-
-    // Cek apakah sudah diinstall
-    window.addEventListener('appinstalled', () => {
-      setIsInstalled(true);
-      setInstallPrompt(null);
-    });
-
-    return () => window.removeEventListener('beforeinstallprompt', handler);
-  }, []);
-
-  const handleInstall = async () => {
-    if (!installPrompt) return;
-    installPrompt.prompt();
-    const { outcome } = await installPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setInstallPrompt(null);
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
     }
   };
 
+  // Data Portofolio (bisa kamu sesuaikan nanti)
+  const projects = [
+    { id: 1, title: 'Aplikasi Manajemen Tugas', desc: 'Aplikasi berbasis web untuk mengatur *deadline* kuliah.', tech: 'React, Firebase' },
+    { id: 2, title: 'E-Commerce Sederhana', desc: 'Platform toko online dengan integrasi *payment gateway*.', tech: 'Node.js, Express, MongoDB' },
+    { id: 3, title: 'Web Progressive (PWA)', desc: 'Proyek pembuatan PWA dengan fitur *offline-first*.', tech: 'React, Service Worker' },
+  ];
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <div className="logo">⚡ PWA</div>
-        <h1>My Progressive Web App</h1>
-        <p className="subtitle">Pemrograman Web Lanjut — React PWA</p>
+    <div className="portfolio-container">
+      {/* Status Bar PWA */}
+      <div className={`status-bar ${isOnline ? 'online' : 'offline'}`}>
+        <span className="dot"></span>
+        {isOnline ? 'Online — Terhubung ke internet' : 'Offline — Berjalan dalam mode lokal'}
+      </div>
+
+      {/* Hero Section */}
+      <header className="hero-section">
+        <div className="hero-content">
+          <div className="profile-badge">⚡ Portofolio</div>
+          <h1>Halo, Saya Naufal</h1>
+          <p className="subtitle">Mahasiswa Pemrograman Web Lanjut — Web Developer & PWA Enthusiast</p>
+          
+          {/* Tombol Install PWA tetap dipertahankan */}
+          {deferredPrompt && (
+            <button className="btn-install" onClick={handleInstallClick}>
+              📲 Tambahkan ke Homescreen
+            </button>
+          )}
+        </div>
       </header>
 
-      <main className="App-main">
+      {/* Main Content */}
+      <main className="main-content">
+        {/* Tentang Saya */}
+        <section className="section">
+          <h2>About Me</h2>
+          <p>Saya adalah seorang mahasiswa semester 4 yang sedang mendalami pengembangan web, khususnya arsitektur modern seperti *Progressive Web Apps* (PWA). Berfokus pada pembuatan aplikasi yang cepat, responsif, dan dapat diakses kapan saja.</p>
+        </section>
 
-        {/* Status Koneksi */}
-        <div className={`status-card ${isOnline ? 'online' : 'offline'}`}>
-          <span className="status-dot"></span>
-          <span>{isOnline ? '🟢 Online — Terhubung ke internet' : '🔴 Offline — Mode Tanpa Internet'}</span>
-        </div>
-
-        {/* Tombol Install */}
-        {!isInstalled && installPrompt && (
-          <div className="install-card">
-            <h2>📲 Install Aplikasi</h2>
-            <p>Install aplikasi ini ke perangkat Anda untuk akses cepat!</p>
-            <button className="install-btn" onClick={handleInstall}>
-              Tambahkan ke Homescreen
-            </button>
+        {/* Daftar Proyek */}
+        <section className="section">
+          <h2>My Projects</h2>
+          <div className="project-grid">
+            {projects.map((project) => (
+              <div key={project.id} className="project-card">
+                <h3>{project.title}</h3>
+                <p>{project.desc}</p>
+                <span className="tech-badge">{project.tech}</span>
+              </div>
+            ))}
           </div>
-        )}
-
-        {isInstalled && (
-          <div className="install-card installed">
-            <p>✅ Aplikasi sudah terinstall di perangkat Anda!</p>
-          </div>
-        )}
-
-        {/* Fitur PWA */}
-        <div className="features-grid">
-          <div className="feature-card">
-            <div className="feature-icon">📦</div>
-            <h3>Service Worker</h3>
-            <p>Caching otomatis aset aplikasi untuk performa lebih cepat dan dukungan offline.</p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">📋</div>
-            <h3>Web Manifest</h3>
-            <p>Metadata aplikasi: nama, ikon, warna tema, dan tampilan standalone.</p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">📵</div>
-            <h3>Offline Support</h3>
-            <p>Aplikasi tetap dapat diakses meskipun koneksi internet tidak tersedia.</p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">📲</div>
-            <h3>Installable</h3>
-            <p>Dapat diinstall ke homescreen perangkat mobile maupun desktop.</p>
-          </div>
-        </div>
-
-        {/* Panduan Pengujian */}
-        <div className="info-card">
-          <h2>🔍 Cara Menguji PWA</h2>
-          <ol>
-            <li>Buka <strong>Chrome DevTools</strong> (F12)</li>
-            <li>Pilih tab <strong>Application</strong></li>
-            <li>Cek <strong>Manifest</strong> — pastikan semua field terisi</li>
-            <li>Cek <strong>Service Workers</strong> — pastikan status "Activated"</li>
-            <li>Jalankan <strong>Lighthouse Audit</strong> (Ctrl+Shift+P → "Lighthouse")</li>
-          </ol>
-        </div>
-
+        </section>
       </main>
 
-      <footer className="App-footer">
-        <p>Dibuat untuk praktikum Pemrograman Web Lanjut &mdash; PWA dengan React</p>
+      {/* Footer */}
+      <footer className="footer">
+        <p>&copy; {new Date().getFullYear()} Naufal. Built with React PWA.</p>
       </footer>
     </div>
   );
