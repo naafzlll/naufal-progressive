@@ -1,0 +1,23 @@
+# Konfigurasi deployment ke Netlify
+# File ini memastikan React Router dan PWA bekerja dengan benar di Netlify
+
+[build]
+  command = "npm run build"
+  publish = "build"
+
+# Redirect semua request ke index.html (untuk Single Page Application)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Header keamanan dan caching
+[[headers]]
+  for = "/service-worker.js"
+    [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/static/*"
+    [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
